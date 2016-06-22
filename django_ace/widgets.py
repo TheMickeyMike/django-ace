@@ -39,9 +39,10 @@ class AceWidget(forms.Textarea):
     def render(self, name, value, attrs=None):
         attrs = attrs or {}
 
+        size_style = 'width: {}px; height: {}px;'.format(self.width, self.height)
         ace_attrs = {
             "class": "django-ace-widget loading",
-            "style": "width:%s; height:%s" % (self.width, self.height)
+            'style': 'width: {}; height: {};'.format(self.width, self.height),
         }
         if self.mode:
             ace_attrs["data-mode"] = self.mode
@@ -57,10 +58,17 @@ class AceWidget(forms.Textarea):
 
         textarea = super(AceWidget, self).render(name, value, attrs)
 
-
-        html = '<div%s><div></div></div>%s' % (flatatt(ace_attrs), textarea)
-
-        # add toolbar
-        html = '<div class="django-ace-editor"><div style="width: %s" class="django-ace-toolbar"><a href="./" class="django-ace-max_min"></a></div>%s</div>' % (self.width, html)
+        html = '''
+        <div class="django-ace-editor">
+            <div class="django-ace-toolbar" style="width: {};">
+                <a href="./" class="django-ace-max_min"></a>
+            </div>
+            <div{}>{}</div>
+        </div>
+        '''.format(
+            self.width,
+            flatatt(ace_attrs),
+            textarea
+        )
 
         return mark_safe(html)

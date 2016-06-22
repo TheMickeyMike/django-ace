@@ -17,62 +17,44 @@
         );
     }
 
-    function next(elem) {
-        // Credit to John Resig for this function
-        // taken from Pro JavaScript techniques
-        do {
-            elem = elem.nextSibling;
-        } while (elem && elem.nodeType != 1);
-        return elem;
-    }
-
-    function prev(elem) {
-        // Credit to John Resig for this function
-        // taken from Pro JavaScript techniques
-        do {
-            elem = elem.previousSibling;
-        } while (elem && elem.nodeType != 1);
-        return elem;
-    }
-
-    function redraw(element){
-    element = $(element);
-    var n = document.createTextNode(' ');
-    element.appendChild(n);
-    (function(){n.parentNode.removeChild(n)}).defer();
-    return element;
-  }
-
-    function minimizeMaximize(widget, main_block, editor) {
+    function minimizeMaximize(widget, main_block, toolbar, editor) {
         if (window.fullscreen == true) {
             main_block.className = 'django-ace-editor';
 
+            document.body.style.overflow = 'auto';
             widget.style.width = window.ace_widget.width + 'px';
             widget.style.height = window.ace_widget.height + 'px';
+            toolbar.style.width = window.ace_widget.width + 'px';
             widget.style.zIndex = 1;
+            toolbar.style.zIndex = 1;
             window.fullscreen = false;
         }
         else {
             window.ace_widget = { 
                 'width': widget.offsetWidth,
-                'height': widget.offsetHeight,
-            }
+                'height': widget.offsetHeight
+            };
 
             main_block.className = 'django-ace-editor-fullscreen';
 
-            widget.style.height = getDocHeight() + 'px';
+            document.body.style.overflow = 'hidden';
+            widget.style.height = (getDocHeight() - toolbar.offsetHeight) + 'px';
             widget.style.width = getDocWidth() + 'px';
-            widget.style.zIndex = 999;
+            widget.style.zIndex = 9999;
+
+            toolbar.style.width = getDocWidth() + 'px';
+            toolbar.style.zIndex = 9999;
 
             window.scrollTo(0, 0);
             window.fullscreen = true;
-            editor.resize();
-        }                
+        }
+
+        editor.resize();
     }
 
     function apply_widget(widget) {
-        var div = widget.firstChild,
-            textarea = next(widget),
+        var div = document.createElement('div'),
+            textarea = widget.getElementsByTagName('textarea')[0],
             editor = ace.edit(div),
             mode = widget.getAttribute('data-mode'),
             theme = widget.getAttribute('data-theme'),
@@ -80,13 +62,16 @@
             minlines = widget.getAttribute('data-minlines'),
             maxlines = widget.getAttribute('data-maxlines'),
             showprintmargin = widget.getAttribute('data-showprintmargin'),
-            toolbar = prev(widget),
+            toolbar = widget.parentNode.getElementsByClassName('django-ace-toolbar')[0],
             main_block = toolbar.parentNode;
+
+        // add new div
+        widget.appendChild(div);
 
         // Toolbar maximize/minimize button
         var min_max = toolbar.getElementsByClassName('django-ace-max_min');
         min_max[0].onclick = function() {
-            minimizeMaximize(widget, main_block, editor);
+            minimizeMaximize(widget, main_block, toolbar, editor);
             return false;
         };
 
@@ -127,7 +112,9 @@
                 minimizeMaximize(widget, main_block, editor);
             },
             readOnly: true // false if this command should not apply in readOnly mode
-        });        
+        });
+
+        editor.resize();
     }
 
     function init() {

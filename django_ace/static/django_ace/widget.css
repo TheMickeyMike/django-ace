@@ -25,9 +25,9 @@
     background-image: -moz-linear-gradient(#fafafa, #eaeaea);
     background-image: -webkit-linear-gradient(#fafafa, #eaeaea);
     background-image: linear-gradient(#fafafa, #eaeaea);
-    background-repeat: repeat-x;    
-    clear: both;
+    background-repeat: repeat-x;
     overflow: hidden;
+    position: relative;
 }
 
 .django-ace-max_min {
@@ -50,6 +50,10 @@
 .django-ace-editor-fullscreen {
     position: absolute;
     top: 0px; left: 0px;
+}
+
+.django-ace-editor-fullscreen .django-ace-toolbar {
+    width: 100%;
 }
 
 .django-ace-editor-fullscreen .django-ace-max_min {
