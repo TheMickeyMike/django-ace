@@ -36,7 +36,7 @@ class AceWidget(forms.Textarea):
             }
         return forms.Media(js=js, css=css)
 
-    def render(self, name, value, attrs=None):
+    def render(self, name, value, attrs=None, renderer=None):
         attrs = attrs or {}
 
         size_style = 'width: {}px; height: {}px;'.format(self.width, self.height)
